@@ -1,1 +1,1 @@
-web: gunicorn sample
+web: python sample.py
