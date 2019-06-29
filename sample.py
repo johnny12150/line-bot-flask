@@ -13,8 +13,6 @@ from linebot.models import (
 
 app = Flask(__name__)
 
-print(os.environ['CHANNEL_SECRET'])
-
 # 使用heroku的environment variables
 line_bot_api = LineBotApi(os.environ['CHANNEL_ACCESS_TOKEN'])
 handler = WebhookHandler(os.environ['CHANNEL_SECRET'])
@@ -48,4 +46,6 @@ def handle_message(event):
 
 
 if __name__ == "__main__":
-    app.run()
+    port = int(os.environ.get('PORT', 5000))
+    # Setting host='0.0.0.0' will make Flask available from the network
+    app.run(host='0.0.0.0', port=port)
