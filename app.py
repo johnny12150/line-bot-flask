@@ -29,6 +29,7 @@ config.read("config.ini")
 line_bot_api = LineBotApi(os.environ['CHANNEL_ACCESS_TOKEN'])
 handler = WebhookHandler(os.environ['CHANNEL_SECRET'])
 google_api_key = os.environ['GOOGLE_API_KEY']
+line_reply_api = 'https://api.line.me/v2/bot/message/reply'
 
 
 @app.route('/')
@@ -80,6 +81,68 @@ def handle_message(event):
         line_bot_api.reply_message(
             event.reply_token,
             buttons_template_message)
+
+    # 用request將訊息POST回去
+    if "測試" in msg:
+        # 設定header
+        reply_header = {'Content-Type': 'application/json; charset=UTF-8',
+                        'Authorization': 'Bearer ' + os.environ['CHANNEL_ACCESS_TOKEN'], }
+        # 設定回傳的訊息格式
+        reply_json = {
+            "replyToken": event.reply_token,
+            "messages": [{
+                "type": "flex",
+                "altText": "Flex Message",
+                "contents": {
+                    "type": "bubble",
+                    "direction": "ltr",
+                    "header": {
+                        "type": "box",
+                        "layout": "vertical",
+                        "contents": [
+                            {
+                                "type": "text",
+                                "text": "Header",
+                                "align": "center"
+                            }
+                        ]
+                    },
+                    "hero": {
+                        "type": "image",
+                        "url": "https://developers.line.me/assets/images/services/bot-designer-icon.png",
+                        "size": "full",
+                        "aspectRatio": "1.51:1",
+                        "aspectMode": "fit"
+                    },
+                    "body": {
+                        "type": "box",
+                        "layout": "vertical",
+                        "contents": [
+                            {
+                                "type": "text",
+                                "text": "Body",
+                                "align": "center"
+                            }
+                        ]
+                    },
+                    "footer": {
+                        "type": "box",
+                        "layout": "horizontal",
+                        "contents": [
+                            {
+                                "type": "button",
+                                "action": {
+                                    "type": "uri",
+                                    "label": "Button",
+                                    "uri": "https://linecorp.com"
+                                }
+                            }
+                        ]
+                    }
+                }
+            }]
+        }
+        res = requests.post(line_reply_api, headers=reply_header, json=reply_json)
 
     # 如果前面條件都沒觸發，回應使用者`輸入的話
     line_bot_api.reply_message(
