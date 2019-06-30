@@ -180,6 +180,10 @@ def handle_message(event):
         )
         line_bot_api.reply_message(event.reply_token, message)
 
+    # 處理postback的text
+    if "postback" in msg:
+        line_bot_api.reply_message(event.reply_token, TextSendMessage(text='觸發postback文字'))
+
     # 詢問是否滿意服務
     if "服務" in msg:
         confirm_message = TemplateSendMessage(
@@ -187,16 +191,18 @@ def handle_message(event):
             template=ConfirmTemplate(
                 text='對於此Bot的服務滿意嗎?',
                 actions=[
+                    # 左右的回答可以用不同型態的template
                     PostbackTemplateAction(
-                        label='postback',
+                        label='Yes',
                         text='postback text',
-                        data='action=buy&itemid=1'
+                        # 會直接回傳到bot
+                        data='like_service'
                     ),
                     MessageTemplateAction(
                         # 顯示在選項中的文字
-                        label='message',
+                        label='No',
                         # 點擊該選項後，會發送出的文字訊息
-                        text='message text'
+                        text='text'
                     )
                 ]
             )
