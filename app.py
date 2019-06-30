@@ -98,8 +98,8 @@ def ptt_beauty():
     res = rs.get('https://www.ptt.cc/bbs/SNSD/index.html')
     soup = BeautifulSoup(res.text, 'html.parser')
     all_page_url = soup.select('.btn.wide')[1]['href']
-    start_page = get_page_number(all_page_url)
-    page_term = 2  # 查看頁數
+    start_page = get_page_number(all_page_url)  # 歷史總頁數
+    page_term = 2  # 欲查看頁數
     push_rate = 10  # 對選擇的推文做人氣限制(> 10)
     index_list = []
     article_list = []
@@ -150,6 +150,23 @@ def handle_message(event):
             )
         )
         line_bot_api.reply_message(event.reply_token, buttons_template_message)
+        return 0
+
+    # 畫圖app
+    if "畫圖" in msg or "draw" in msg:
+        draw_message = TemplateSendMessage(
+            alt_text="點擊下方連結開始畫圖",
+            template=ButtonsTemplate(
+                text="點擊下方連結開始畫圖",
+                actions=[
+                    URITemplateAction(
+                        label="開始畫圖",
+                        uri="line://app/1593667175-GOwYBOBO"
+                    )
+                ]
+            )
+        )
+        line_bot_api.reply_message(event.reply_token, draw_message)
         return 0
 
     # 用request將訊息POST回去
