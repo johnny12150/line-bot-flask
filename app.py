@@ -152,7 +152,7 @@ def handle_message(event):
                 text="영원히소녀시대！",
                 actions=[
                     # 傳送目前位置
-                    URITemplateAction(
+                    URIAction(
                         label="SNSD PTT page",
                         uri="https://www.ptt.cc/bbs/SNSD/index.html"
                     )
@@ -162,7 +162,17 @@ def handle_message(event):
 
         line_bot_api.reply_message(event.reply_token, uri_message)
 
-    # 回傳影片/ 照片
+    # 找PTT熱門文章
+
+    # 詢問空氣品質 (政府API)
+    if "空氣" in msg or "PM2.5" in msg:
+        gov_api = 'https://opendata.epa.gov.tw/api/v1/AQI?%24skip=0&%24top=10&%24format=json'
+        response = requests.get(gov_api)
+        air_data = response.json()
+        msg_text1 = air_data[0].SiteName + '空氣品質: ' + air_data[0].Status
+        msg_text2 = 'PM2.5 = ' + air_data[0]['PM2.5']
+        # 可以一次回傳多筆訊息(最多五筆)
+        line_bot_api.reply_message(event.reply_token, [TextSendMessage(text=msg_text1), TextSendMessage(text=msg_text2)])
 
     # 回傳貼圖
     if "貼圖" in msg or "sticker" in msg:
@@ -194,6 +204,7 @@ def handle_message(event):
                     # 左右的回答可以用不同型態的template
                     PostbackTemplateAction(
                         label='Yes',
+                        # 可以設為None (如果有填值會同時觸發text跟postback event)
                         text='postback text',
                         # 會直接回傳到bot
                         data='like_service'
@@ -290,6 +301,9 @@ def handle_location_message(event):
 def handle_postback(event):
     # 注意!! 這裡的event.message是取不到text的
     data = event.message.data
+
+    if "like_service" in data:
+        line_bot_api.reply_message(event.reply_token, TextSendMessage(text='感謝您喜歡我們的服務!!'))
 
 
 # 執行flask
