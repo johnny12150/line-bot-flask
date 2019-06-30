@@ -95,7 +95,7 @@ def get_page_number(content):
 
 def ptt_beauty():
     rs = requests.session()
-    res = rs.get('https://www.ptt.cc/bbs/Beauty/index.html')
+    res = rs.get('https://www.ptt.cc/bbs/SNSD/index.html')
     soup = BeautifulSoup(res.text, 'html.parser')
     all_page_url = soup.select('.btn.wide')[1]['href']
     start_page = get_page_number(all_page_url)
@@ -104,7 +104,7 @@ def ptt_beauty():
     index_list = []
     article_list = []
     for page in range(start_page, start_page - page_term, -1):
-        page_url = 'https://www.ptt.cc/bbs/Beauty/index{}.html'.format(page)
+        page_url = 'https://www.ptt.cc/bbs/SNSD/index{}.html'.format(page)
         index_list.append(page_url)
 
     # 抓取 文章標題 網址 推文數
