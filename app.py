@@ -144,10 +144,46 @@ def handle_message(event):
         }
         res = requests.post(line_reply_api, headers=reply_header, json=reply_json)
 
-    # 如果前面條件都沒觸發，回應使用者`輸入的話
-    line_bot_api.reply_message(
-        event.reply_token,
-        TextSendMessage(text=msg))
+    # 用line_bot_api將客製化的訊息返回
+    if "SNSD" in msg:
+        uri_message = TemplateSendMessage(
+            alt_text="영원히소녀시대！",
+            template=ButtonsTemplate(
+                text="영원히소녀시대！",
+                actions=[
+                    # 傳送目前位置
+                    URITemplateAction(
+                        label="SNSD PTT page",
+                        uri="https://www.ptt.cc/bbs/SNSD/index.html"
+                    )
+                ]
+            )
+        )
+
+        line_bot_api.reply_message(event.reply_token, uri_message)
+
+    # 回傳影片/ 照片
+
+    # 回傳貼圖
+    if "貼圖" in msg or "sticker" in msg:
+        # 回傳隨機貼圖
+        sticker_ids = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 21, 100, 101, 102, 103, 104, 105,
+                       106,
+                       107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124,
+                       125,
+                       126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 401, 402]
+        index_id = random.randint(0, len(sticker_ids) - 1)
+        sticker_id = str(sticker_ids[index_id])
+        message = StickerSendMessage(
+            package_id='1',
+            sticker_id=sticker_id
+        )
+        line_bot_api.reply_message(event.reply_token, message)
+
+    # LIFF的應用(以draw為例)
+
+    # 如果前面條件都沒觸發，回應使用者輸入的話
+    line_bot_api.reply_message(event.reply_token, TextSendMessage(text=msg))
 
 
 # 處理位置訊息
@@ -207,6 +243,7 @@ def handle_location_message(event):
             title=restaurant["name"],
             text=details,
             actions=[
+                # 同URIAction
                 URITemplateAction(
                     label='查看地圖',
                     uri=map_url
@@ -217,6 +254,13 @@ def handle_location_message(event):
     line_bot_api.reply_message(
         event.reply_token,
         buttons_template_message)
+
+
+# 處理按下按鈕後的postback
+@handler.add(PostbackEvent)
+def handle_postback(event):
+    # 注意!! 這裡的event.message是取不到text的
+    data = event.message.data
 
 
 # 執行flask
