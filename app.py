@@ -180,6 +180,29 @@ def handle_message(event):
         )
         line_bot_api.reply_message(event.reply_token, message)
 
+    # 詢問是否滿意服務
+    if "服務" in msg:
+        confirm_message = TemplateSendMessage(
+            alt_text='Confirm template',
+            template=ConfirmTemplate(
+                text='對於此Bot的服務滿意嗎?',
+                actions=[
+                    PostbackTemplateAction(
+                        label='postback',
+                        text='postback text',
+                        data='action=buy&itemid=1'
+                    ),
+                    MessageTemplateAction(
+                        # 顯示在選項中的文字
+                        label='message',
+                        # 點擊該選項後，會發送出的文字訊息
+                        text='message text'
+                    )
+                ]
+            )
+        )
+        line_bot_api.reply_message(event.reply_token, confirm_message)
+
     # LIFF的應用(以draw為例)
 
     # 如果前面條件都沒觸發，回應使用者輸入的話
