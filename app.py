@@ -169,7 +169,7 @@ def handle_message(event):
         gov_api = 'https://opendata.epa.gov.tw/api/v1/AQI?%24skip=0&%24top=10&%24format=json'
         response = requests.get(gov_api)
         air_data = response.json()
-        msg_text1 = air_data[0].SiteName + '空氣品質: ' + air_data[0].Status
+        msg_text1 = air_data[0]['SiteName'] + '空氣品質: ' + air_data[0]['Status']
         msg_text2 = 'PM2.5 = ' + air_data[0]['PM2.5']
         # 可以一次回傳多筆訊息(最多五筆)
         line_bot_api.reply_message(event.reply_token, [TextSendMessage(text=msg_text1), TextSendMessage(text=msg_text2)])
@@ -204,7 +204,7 @@ def handle_message(event):
                     # 左右的回答可以用不同型態的template
                     PostbackTemplateAction(
                         label='Yes',
-                        # 可以設為None (如果有填值會同時觸發text跟postback event)
+                        # 可以設為None (如果有填值只會觸發text, 且使用者會輸入該text)
                         text='postback text',
                         # 會直接回傳到bot
                         data='like_service'
