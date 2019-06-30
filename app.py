@@ -166,7 +166,7 @@ def handle_message(event):
 
     # 詢問空氣品質 (政府API)
     if "空氣" in msg or "PM2.5" in msg:
-        gov_api = 'https://opendata.epa.gov.tw/api/v1/AQI?%24skip=0&%24top=10&%24format=json'
+        gov_api = 'http://opendata.epa.gov.tw/api/v1/AQI?%24skip=0&%24top=10&%24format=json'
         response = requests.get(gov_api)
         air_data = response.json()
         msg_text1 = air_data[0]['SiteName'] + '空氣品質: ' + air_data[0]['Status']
