@@ -250,7 +250,7 @@ def handle_message(event):
         line_bot_api.reply_message(event.reply_token, uri_message)
         return 0
 
-    # 找PTT熱門文章 (搭配輪播)
+    # 找PTT熱門文章
     if "PTT" in msg:
         content = ptt_beauty()
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text=content))
@@ -314,7 +314,73 @@ def handle_message(event):
         )
         line_bot_api.reply_message(event.reply_token, confirm_message)
 
-    # LIFF的應用(以draw為例)
+    # 輪播示範
+    if "目錄" in msg or "功能" in msg or "menu" in msg:
+        menu_template_message = TemplateSendMessage(
+            alt_text='目錄 template',
+            template=CarouselTemplate(
+                columns=[
+                    CarouselColumn(
+                        thumbnail_image_url='https://yellowslugreviews.files.wordpress.com/2015/07/2015070710112851253.jpg',
+                        title='選擇服務',
+                        text='請選擇',
+                        actions=[
+                            MessageAction(
+                                label='開始玩',
+                                text='開始玩'
+                            ),
+                            URIAction(
+                                label='Line Bot教學網頁',
+                                uri='https://chat-bot.johnny12150.site'
+                            ),
+                            URIAction(
+                                label='Line Bot 開源碼',
+                                uri='https://github.com/johnny12150/line-bot-flask'
+                            )
+                        ]
+                    ),
+                    CarouselColumn(
+                        thumbnail_image_url='https://i.imgur.com/pSesLE2.jpg',
+                        title='選擇服務',
+                        text='請選擇',
+                        actions=[
+                            MessageAction(
+                                label='找餐廳',
+                                text='找餐廳'
+                            ),
+                            MessageAction(
+                                label='空氣品質查詢',
+                                text='空氣品質查詢'
+                            ),
+                            URIAction(
+                                label='聯絡作者',
+                                uri='https://www.facebook.com/johnny12150'
+                            )
+                        ]
+                    ),
+                    CarouselColumn(
+                        thumbnail_image_url='https://i.imgur.com/r7UUilc.jpg',
+                        title='選擇服務',
+                        text='請選擇',
+                        actions=[
+                            URIAction(
+                                label='Line Bot教學投影片',
+                                uri='https://1drv.ms/p/s!Aigohf1HXs8Uj1ePAuzEqNVSKRqe'
+                            ),
+                            URIAction(
+                                label='畫圖',
+                                uri='line://app/1593667175-GOwYBOBO'
+                            ),
+                            MessageAction(
+                                label='服務滿意度調查',
+                                text='服務滿意度'
+                            )
+                        ]
+                    )
+                ]
+            )
+        )
+        line_bot_api.reply_message(event.reply_token, menu_template_message)
 
     # 如果前面條件都沒觸發，回應使用者輸入的話
     line_bot_api.reply_message(event.reply_token, TextSendMessage(text=msg))
