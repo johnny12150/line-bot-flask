@@ -476,7 +476,7 @@ def handle_location_message(event):
 
 
 # 處理按下按鈕後的postback
-@handler.add(PostbackEvent)
+@handler.add(MessageEvent, message=PostbackEvent)
 def handle_postback(event):
     # 注意!! 這裡的event.message是取不到text的
     data = event.message.data
