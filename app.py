@@ -499,7 +499,7 @@ def craw_ubereats(link):
             # decode方式 urllib.parse.unquote()
             try:
                 # 取餐廳名稱
-                restaurant_list.append(restaurant_list.append(name.div.figure.find_next_siblings('div')[0].div.get_text()))
+                restaurant_list.append(name.div.figure.find_next_siblings('div')[0].div.get_text())
             except:
                 continue
 
