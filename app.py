@@ -479,7 +479,7 @@ def handle_location_message(event):
 @handler.add(PostbackEvent)
 def handle_postback(event):
     # 注意!! 這裡的event.message是取不到text的
-    data = event.message.data
+    data = event.postback.data
 
     if data == "like_service":
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text='感謝您喜歡我們的服務!!'))
