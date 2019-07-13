@@ -238,7 +238,6 @@ def handle_message(event):
             template=ButtonsTemplate(
                 text="영원히소녀시대！",
                 actions=[
-                    # 傳送目前位置
                     URIAction(
                         label="SNSD PTT page",
                         uri="https://www.ptt.cc/bbs/SNSD/index.html"
@@ -299,7 +298,7 @@ def handle_message(event):
                     PostbackTemplateAction(
                         label='Yes',
                         # 可以設為None (如果有填值只會觸發text, 且使用者會輸入該text)
-                        text='postback text',
+                        # text='postback text',
                         # 會直接回傳到bot
                         data='like_service'
                     ),
@@ -382,6 +381,27 @@ def handle_message(event):
         )
         line_bot_api.reply_message(event.reply_token, menu_template_message)
 
+    if "訂餐" in msg or "外送" in msg or 'eats' in msg or 'panda' in msg:
+        message = TemplateSendMessage(
+            alt_text='請選擇訂餐平台',
+            template=ButtonsTemplate(
+                thumbnail_image_url='https://storage.googleapis.com/ubereats/UE-FB-Post.png',
+                title='訂餐平台',
+                text='請選擇訂餐平台',
+                actions=[
+                    PostbackTemplateAction(
+                        label='UberEats',
+                        data='UberEats'
+                    ),
+                    PostbackTemplateAction(
+                        label='FoodPandas',
+                        data='FoodPandas'
+                    )
+                ]
+            )
+        )
+        line_bot_api.reply_message(event.reply_token, message)
+
     # 如果前面條件都沒觸發，回應使用者輸入的話
     line_bot_api.reply_message(event.reply_token, TextSendMessage(text=msg))
 
@@ -393,8 +413,7 @@ def handle_location_message(event):
     lat = event.message.latitude
     long = event.message.longitude
     # 使用google API搜尋附近的餐廳
-    nearby_url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?key={}&location={},{}&rankby=distance&type=restaurant&language=zh-TW".format(
-        google_api_key, lat, long)
+    nearby_url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?key={}&location={},{}&rankby=distance&type=restaurant&language=zh-TW".format(google_api_key, lat, long)
     # 得到附近的20家餐廳資訊
     nearby_results = requests.get(nearby_url)
     nearby_restaurants_dict = nearby_results.json()
@@ -464,6 +483,9 @@ def handle_postback(event):
 
     if "like_service" in data:
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text='感謝您喜歡我們的服務!!'))
+
+    if "UberEats" in data:
+        line_bot_api.reply_message(event.reply_token, TextSendMessage(text='https://www.ubereats.com/zh-TW/feed/?pl=JTdCJTIyYWRkcmVzcyUyMiUzQSUyMiVFNSU5QyU4QiVFNyVBQiU4QiVFNCVCQSVBNCVFOSU4MCU5QSVFNSVBNCVBNyVFNSVBRCVCOCVFNSU4NSU4OSVFNSVCRSVBOSVFNiVBMCVBMSVFNSU4RCU4MCUyMiUyQyUyMnJlZmVyZW5jZSUyMiUzQSUyMkNoSUpNVjhrNzFjMmFEUVJtajV5T25fYUtUayUyMiUyQyUyMnJlZmVyZW5jZVR5cGUlMjIlM0ElMjJnb29nbGVfcGxhY2VzJTIyJTJDJTIybGF0aXR1ZGUlMjIlM0EyNC43ODk0MjY0OTk5OTk5OTglMkMlMjJsb25naXR1ZGUlMjIlM0ExMjEuMDAwMTIwNyU3RA%3D%3D'))
 
 
 # 執行flask
