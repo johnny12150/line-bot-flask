@@ -298,7 +298,7 @@ def handle_message(event):
                     PostbackTemplateAction(
                         label='Yes',
                         # 可以設為None (如果有填值只會觸發text, 且使用者會輸入該text)
-                        # text='postback text',
+                        text=None,
                         # 會直接回傳到bot
                         data='like_service'
                     ),
@@ -485,6 +485,8 @@ def handle_postback(event):
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text='感謝您喜歡我們的服務!!'))
 
     if "UberEats" in data:
+        # 透過爬蟲抓出交大可以訂的餐廳
+        # 回傳交大可以訂的餐廳
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text='https://www.ubereats.com/zh-TW/feed/?pl=JTdCJTIyYWRkcmVzcyUyMiUzQSUyMiVFNSU5QyU4QiVFNyVBQiU4QiVFNCVCQSVBNCVFOSU4MCU5QSVFNSVBNCVBNyVFNSVBRCVCOCVFNSU4NSU4OSVFNSVCRSVBOSVFNiVBMCVBMSVFNSU4RCU4MCUyMiUyQyUyMnJlZmVyZW5jZSUyMiUzQSUyMkNoSUpNVjhrNzFjMmFEUVJtajV5T25fYUtUayUyMiUyQyUyMnJlZmVyZW5jZVR5cGUlMjIlM0ElMjJnb29nbGVfcGxhY2VzJTIyJTJDJTIybGF0aXR1ZGUlMjIlM0EyNC43ODk0MjY0OTk5OTk5OTglMkMlMjJsb25naXR1ZGUlMjIlM0ExMjEuMDAwMTIwNyU3RA%3D%3D'))
 
 
