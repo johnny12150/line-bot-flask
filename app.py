@@ -2,6 +2,8 @@ from flask import Flask, request, abort
 import configparser
 import os
 from bs4 import BeautifulSoup
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 import requests
 import random
 
@@ -413,7 +415,8 @@ def handle_location_message(event):
     lat = event.message.latitude
     long = event.message.longitude
     # 使用google API搜尋附近的餐廳
-    nearby_url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?key={}&location={},{}&rankby=distance&type=restaurant&language=zh-TW".format(google_api_key, lat, long)
+    nearby_url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?key={}&location={},{}&rankby=distance&type=restaurant&language=zh-TW".format(
+        google_api_key, lat, long)
     # 得到附近的20家餐廳資訊
     nearby_results = requests.get(nearby_url)
     nearby_restaurants_dict = nearby_results.json()
@@ -475,6 +478,35 @@ def handle_location_message(event):
         buttons_template_message)
 
 
+# 爬ubereats有哪些餐廳
+def craw_ubereats(link):
+    restaurant_list = []
+    options = Options()
+    options.binary_location = os.environ.get('GOOGLE_CHROME_BIN')
+    options.add_argument('--headless')
+    options.add_argument('--disable-gpu')
+    options.add_argument('--no-sandbox')
+    options.add_argument('--remote-debugging-port=9222')
+    web = webdriver.Chrome(executable_path=str(os.environ.get('CHROMEDRIVER_PATH')), options=options)
+    web.get(link)
+    soup = BeautifulSoup(web.page_source, 'xml')
+    for name in soup.find_all('a'):
+        # 取餐廳url
+        if 'food-delivery' in name['href']:
+            # restaurant_list.append(name['href'])
+            # 取url中餐廳名的部分(被url encode過)
+            # name['href'].split('food-delivery/')[1].split('/')[0]
+            # decode方式 urllib.parse.unquote()
+            try:
+                # 取餐廳名稱
+                restaurant_list.append(restaurant_list.append(name.div.figure.find_next_siblings('div')[0].div.get_text()))
+            except:
+                continue
+
+    web.close()
+    return restaurant_list
+
+
 # 處理按下按鈕後的postback
 @handler.add(PostbackEvent)
 def handle_postback(event):
@@ -485,9 +517,13 @@ def handle_postback(event):
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text='感謝您喜歡我們的服務!!'))
 
     if "UberEats" in data:
+        # 送餐地址
+        location = 'https://www.ubereats.com/zh-TW/feed/?pl=JTdCJTIyYWRkcmVzcyUyMiUzQSUyMiVFNSU5QyU4QiVFNyVBQiU4QiVFNCVCQSVBNCVFOSU4MCU5QSVFNSVBNCVBNyVFNSVBRCVCOCVFNSU4NSU4OSVFNSVCRSVBOSVFNiVBMCVBMSVFNSU4RCU4MCUyMiUyQyUyMnJlZmVyZW5jZSUyMiUzQSUyMkNoSUpNVjhrNzFjMmFEUVJtajV5T25fYUtUayUyMiUyQyUyMnJlZmVyZW5jZVR5cGUlMjIlM0ElMjJnb29nbGVfcGxhY2VzJTIyJTJDJTIybGF0aXR1ZGUlMjIlM0EyNC43ODk0MjY0OTk5OTk5OTglMkMlMjJsb25naXR1ZGUlMjIlM0ExMjEuMDAwMTIwNyU3RA%3D%3D'
         # 透過爬蟲抓出交大可以訂的餐廳
+        restaurants = craw_page(location)
+        msg_str = '\n'.join(restaurants[:5])
         # 回傳交大可以訂的餐廳
-        line_bot_api.reply_message(event.reply_token, TextSendMessage(text='https://www.ubereats.com/zh-TW/feed/?pl=JTdCJTIyYWRkcmVzcyUyMiUzQSUyMiVFNSU5QyU4QiVFNyVBQiU4QiVFNCVCQSVBNCVFOSU4MCU5QSVFNSVBNCVBNyVFNSVBRCVCOCVFNSU4NSU4OSVFNSVCRSVBOSVFNiVBMCVBMSVFNSU4RCU4MCUyMiUyQyUyMnJlZmVyZW5jZSUyMiUzQSUyMkNoSUpNVjhrNzFjMmFEUVJtajV5T25fYUtUayUyMiUyQyUyMnJlZmVyZW5jZVR5cGUlMjIlM0ElMjJnb29nbGVfcGxhY2VzJTIyJTJDJTIybGF0aXR1ZGUlMjIlM0EyNC43ODk0MjY0OTk5OTk5OTglMkMlMjJsb25naXR1ZGUlMjIlM0ExMjEuMDAwMTIwNyU3RA%3D%3D'))
+        line_bot_api.reply_message(event.reply_token, TextSendMessage(text=msg_str))
 
     line_bot_api.reply_message(event.reply_token, TextSendMessage(text='postback被觸發'))
 

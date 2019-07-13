@@ -11,6 +11,8 @@ line-bot-sdk = "*"
 gunicorn= "*"
 beautifulsoup4 = "*"
 requests = "*"
+selenium = "*"
+lxml = "*"
 
 [requires]
 python_version = "3.7"
