@@ -6,6 +6,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 import requests
 import random
+from time import sleep
 
 from linebot import (
     LineBotApi, WebhookHandler
@@ -489,6 +490,7 @@ def craw_ubereats(link):
     options.add_argument('--remote-debugging-port=9222')
     web = webdriver.Chrome(executable_path=str(os.environ.get('CHROMEDRIVER_PATH')), options=options)
     web.get(link)
+    sleep(10)
     soup = BeautifulSoup(web.page_source, 'xml')
     for name in soup.find_all('a'):
         # 取餐廳url
