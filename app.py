@@ -491,22 +491,50 @@ def craw_ubereats(link):
     web = webdriver.Chrome(executable_path=str(os.environ.get('CHROMEDRIVER_PATH')), options=options)
     web.get(link)
     sleep(10)
-    soup = BeautifulSoup(web.page_source, 'xml')
+
+    pages = 1
+    # click until you can't
+    while True:
+        try:
+            web.find_element_by_xpath("//button[contains(text(), '顯示更多餐廳')]").click()
+            sleep(5)
+            print(pages)
+            if pages >= 5:
+                break
+            pages += 1
+        except:
+            break
+
+    sleep(10)
+    soup = BeautifulSoup(web.page_source, 'lxml')
+    web.close()
+
+    restaurant_list = []
     for name in soup.find_all('a'):
         # 取餐廳url
         if 'food-delivery' in name['href']:
-            # restaurant_list.append(name['href'])
-            # 取url中餐廳名的部分(被url encode過)
-            # name['href'].split('food-delivery/')[1].split('/')[0]
-            # decode方式 urllib.parse.unquote()
+            template = {}
             try:
                 # 取餐廳名稱
-                restaurant_list.append(name.div.figure.find_next_siblings('div')[0].div.get_text())
+                template['restaurant_name'] = name.article.find_all('div')[4].get_text()
+                template['restaurant_url'] = name['href']
+                # 類別
+                template['restaurant_classes'] = name.article.find_all('div')[5].get_text()
+                # 預估時間
+                template['deliver_time'] = name.article.find_all('div')[9].get_text()
+                # 評價幾分 + 幾份評價
+                template['scores'] = name.article.find_all('div')[12].get_text()
+                # 外送費
+                template['restaurant_fee'] = name.article.find_all('div')[15].get_text()
+
             except:
                 continue
 
-    web.close()
-    return restaurant_list
+            restaurant_list.append(template)
+
+    random_reccomend = random.sample(restaurant_list, 5)
+
+    return [x['restaurant_name'] for x in random_reccomend]
 
 
 # 處理按下按鈕後的postback
