@@ -515,17 +515,24 @@ def craw_ubereats(link):
         if 'food-delivery' in name['href']:
             template = {}
             try:
+                # div5 or div6 都有可能為店家名稱
+                i = 5
+                if name.article.find_all('div')[i].find('div'):
+                    i = 6
+                if '消費' in name.article.find_all('div')[i].text:  # 5, 6有可能是促銷廣告
+                    i = 7
+
                 # 取餐廳名稱
-                template['restaurant_name'] = name.article.find_all('div')[4].get_text()
+                template['restaurant_name'] = name.article.find_all('div')[i].text
                 template['restaurant_url'] = name['href']
                 # 類別
-                template['restaurant_classes'] = name.article.find_all('div')[5].get_text()
+                template['restaurant_classes'] = name.article.find_all('div')[i+1].get_text()
                 # 預估時間
-                template['deliver_time'] = name.article.find_all('div')[9].get_text()
+                template['deliver_time'] = name.article.find_all('div')[i+5].get_text()
                 # 評價幾分 + 幾份評價
-                template['scores'] = name.article.find_all('div')[12].get_text()
+                template['scores'] = name.article.find_all('div')[i+8].get_text()
                 # 外送費
-                template['restaurant_fee'] = name.article.find_all('div')[15].get_text()
+                template['restaurant_fee'] = name.article.find_all('div')[i+11].get_text()
 
             except:
                 continue
