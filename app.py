@@ -29,7 +29,7 @@ config.read("config.ini")
 # album_id = config['imgur_api']['Album_ID']
 # API_Get_Image = config['other_api']['API_Get_Image']
 
-line_bot_api = LineBotApi(os.environ['CHANNEL_ACCESS_TOKEN'], timeout=120)
+line_bot_api = LineBotApi(os.environ['CHANNEL_ACCESS_TOKEN'], timeout=10000)
 handler = WebhookHandler(os.environ['CHANNEL_SECRET'])
 google_api_key = os.environ['GOOGLE_API_KEY']
 line_reply_api = 'https://api.line.me/v2/bot/message/reply'
@@ -405,6 +405,7 @@ def handle_message(event):
         )
         line_bot_api.reply_message(event.reply_token, message)
 
+    # FIXME 這動作太慢，要把token存起來，改成push API
     if 'UE' in msg:
         # 送餐地址
         location = 'https://www.ubereats.com/zh-TW/feed/?pl=JTdCJTIyYWRkcmVzcyUyMiUzQSUyMiVFNSU5QyU4QiVFNyVBQiU4QiVFNCVCQSVBNCVFOSU4MCU5QSVFNSVBNCVBNyVFNSVBRCVCOCVFNSU4NSU4OSVFNSVCRSVBOSVFNiVBMCVBMSVFNSU4RCU4MCUyMiUyQyUyMnJlZmVyZW5jZSUyMiUzQSUyMkNoSUpNVjhrNzFjMmFEUVJtajV5T25fYUtUayUyMiUyQyUyMnJlZmVyZW5jZVR5cGUlMjIlM0ElMjJnb29nbGVfcGxhY2VzJTIyJTJDJTIybGF0aXR1ZGUlMjIlM0EyNC43ODk0MjY0OTk5OTk5OTglMkMlMjJsb25naXR1ZGUlMjIlM0ExMjEuMDAwMTIwNyU3RA%3D%3D'
