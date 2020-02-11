@@ -405,6 +405,15 @@ def handle_message(event):
         )
         line_bot_api.reply_message(event.reply_token, message)
 
+    if 'UE' in msg:
+        # 送餐地址
+        location = 'https://www.ubereats.com/zh-TW/feed/?pl=JTdCJTIyYWRkcmVzcyUyMiUzQSUyMiVFNSU5QyU4QiVFNyVBQiU4QiVFNCVCQSVBNCVFOSU4MCU5QSVFNSVBNCVBNyVFNSVBRCVCOCVFNSU4NSU4OSVFNSVCRSVBOSVFNiVBMCVBMSVFNSU4RCU4MCUyMiUyQyUyMnJlZmVyZW5jZSUyMiUzQSUyMkNoSUpNVjhrNzFjMmFEUVJtajV5T25fYUtUayUyMiUyQyUyMnJlZmVyZW5jZVR5cGUlMjIlM0ElMjJnb29nbGVfcGxhY2VzJTIyJTJDJTIybGF0aXR1ZGUlMjIlM0EyNC43ODk0MjY0OTk5OTk5OTglMkMlMjJsb25naXR1ZGUlMjIlM0ExMjEuMDAwMTIwNyU3RA%3D%3D'
+        # 透過爬蟲抓出交大可以訂的餐廳
+        restaurants = craw_ubereats(location)
+
+        # 回傳交大可以訂的餐廳
+        line_bot_api.reply_message(event.reply_token, TextSendMessage(text='\n'.join(restaurants[:5])))
+
     # 如果前面條件都沒觸發，回應使用者輸入的話
     line_bot_api.reply_message(event.reply_token, TextSendMessage(text=msg))
 
