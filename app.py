@@ -134,7 +134,7 @@ def ue_push(token, text, body=''):
             'Authorization': 'Bearer ' + os.environ['CHANNEL_ACCESS_TOKEN']}
     if body:
         re_body = body
-    re_body = {"replyToken": event.reply_token,
+    re_body = {"replyToken": token,
             "messages": [{
                 "type": "text",
                 "text": text
