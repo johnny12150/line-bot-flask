@@ -134,7 +134,9 @@ def ue_push(token, text, body=''):
             'Authorization': 'Bearer ' + os.environ['CHANNEL_ACCESS_TOKEN']}
     if body:
         re_body = body
-    re_body = {"replyToken": token,
+    re_body = {
+            # "replyToken": token,
+            "to": token,
             "messages": [{
                 "type": "text",
                 "text": text
@@ -425,7 +427,10 @@ def handle_message(event):
         location = 'https://www.ubereats.com/zh-TW/feed/?pl=JTdCJTIyYWRkcmVzcyUyMiUzQSUyMiVFNSU5QyU4QiVFNyVBQiU4QiVFNCVCQSVBNCVFOSU4MCU5QSVFNSVBNCVBNyVFNSVBRCVCOCVFNSU4NSU4OSVFNSVCRSVBOSVFNiVBMCVBMSVFNSU4RCU4MCUyMiUyQyUyMnJlZmVyZW5jZSUyMiUzQSUyMkNoSUpNVjhrNzFjMmFEUVJtajV5T25fYUtUayUyMiUyQyUyMnJlZmVyZW5jZVR5cGUlMjIlM0ElMjJnb29nbGVfcGxhY2VzJTIyJTJDJTIybGF0aXR1ZGUlMjIlM0EyNC43ODk0MjY0OTk5OTk5OTglMkMlMjJsb25naXR1ZGUlMjIlM0ExMjEuMDAwMTIwNyU3RA%3D%3D'
         # 透過爬蟲抓出交大可以訂的餐廳
         restaurants = craw_ubereats(location)
-        reply_header, reply_json = ue_push(event.reply_token, '\n'.join(restaurants[:5]))
+        print(restaurants)
+        userId = events.source.userId
+        # reply_header, reply_json = ue_push(event.reply_token, '\n'.join(restaurants[:5]))
+        reply_header, reply_json = ue_push(userId, '\n'.join(restaurants[:5]))
 
         # 回傳交大可以訂的餐廳
         # line_bot_api.reply_message(event.reply_token, TextSendMessage(text='\n'.join(restaurants[:5])))
