@@ -430,9 +430,13 @@ def handle_message(event):
         # 回傳交大可以訂的餐廳
         # line_bot_api.reply_message(event.reply_token, TextSendMessage(text='\n'.join(restaurants[:5])))
         res = requests.post(line_reply_api, headers=reply_header, json=reply_json)
+        print(res.status_code)
 
-    # 如果前面條件都沒觸發，回應使用者輸入的話
-    line_bot_api.reply_message(event.reply_token, TextSendMessage(text=msg))
+    try:
+        # 如果前面條件都沒觸發，回應使用者輸入的話
+        line_bot_api.reply_message(event.reply_token, TextSendMessage(text=msg))
+    except:
+        print('line-bot already responsed')
 
 
 # 處理位置訊息
