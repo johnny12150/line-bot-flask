@@ -7,6 +7,7 @@ from selenium.webdriver.chrome.options import Options
 import requests
 import random
 from time import sleep
+import psycopg2
 
 from linebot import (
     LineBotApi, WebhookHandler
@@ -32,6 +33,7 @@ config.read("config.ini")
 line_bot_api = LineBotApi(os.environ['CHANNEL_ACCESS_TOKEN'], timeout=10000)
 handler = WebhookHandler(os.environ['CHANNEL_SECRET'])
 google_api_key = os.environ['GOOGLE_API_KEY']
+DB_url = os.environ['DATABASE_URL']
 line_reply_api = 'https://api.line.me/v2/bot/message/reply'
 
 
@@ -421,7 +423,6 @@ def handle_message(event):
         )
         line_bot_api.reply_message(event.reply_token, message)
 
-    # TODO 改成先爬餐廳以備回復(考慮用資料庫存?)
     # 動作太慢，要把token存起來，改成push API
     if 'UE' in msg:
         # 送餐地址
@@ -437,6 +438,12 @@ def handle_message(event):
         # line_bot_api.reply_message(event.reply_token, TextSendMessage(text='\n'.join(restaurants)))
         res = requests.post(line_reply_api, headers=reply_header, json=reply_json)
         print(res.status_code)
+        # TODO 使用者呼叫後，先回傳舊的餐廳list, 接著再來慢慢更新
+        connection = psycopg2.connect(DB_url, sslmode='require')
+        cursor = connection.cursor()
+        print ( connection.get_dsn_parameters(),"\n")  # Print PostgreSQL Connection properties
+        cursor.close()
+        connection.close()
 
     try:
         # 如果前面條件都沒觸發，回應使用者輸入的話
