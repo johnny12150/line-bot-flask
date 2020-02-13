@@ -421,7 +421,7 @@ def handle_message(event):
         )
         line_bot_api.reply_message(event.reply_token, message)
 
-    # FIXME 這動作太慢，要把token存起來，改成push API
+    # 動作太慢，要把token存起來，改成push API
     if 'UE' in msg:
         # 送餐地址
         location = 'https://www.ubereats.com/zh-TW/feed/?pl=JTdCJTIyYWRkcmVzcyUyMiUzQSUyMiVFNSU5QyU4QiVFNyVBQiU4QiVFNCVCQSVBNCVFOSU4MCU5QSVFNSVBNCVBNyVFNSVBRCVCOCVFNSU4NSU4OSVFNSVCRSVBOSVFNiVBMCVBMSVFNSU4RCU4MCUyMiUyQyUyMnJlZmVyZW5jZSUyMiUzQSUyMkNoSUpNVjhrNzFjMmFEUVJtajV5T25fYUtUayUyMiUyQyUyMnJlZmVyZW5jZVR5cGUlMjIlM0ElMjJnb29nbGVfcGxhY2VzJTIyJTJDJTIybGF0aXR1ZGUlMjIlM0EyNC43ODk0MjY0OTk5OTk5OTglMkMlMjJsb25naXR1ZGUlMjIlM0ExMjEuMDAwMTIwNyU3RA%3D%3D'
@@ -429,11 +429,11 @@ def handle_message(event):
         restaurants = craw_ubereats(location)
         print(restaurants)
         userId = events.source.userId
-        # reply_header, reply_json = ue_push(event.reply_token, '\n'.join(restaurants[:5]))
-        reply_header, reply_json = ue_push(userId, '\n'.join(restaurants[:5]))
+        # reply_header, reply_json = ue_push(event.reply_token, '\n'.join(restaurants))
+        reply_header, reply_json = ue_push(userId, '\n'.join(restaurants))
 
         # 回傳交大可以訂的餐廳
-        # line_bot_api.reply_message(event.reply_token, TextSendMessage(text='\n'.join(restaurants[:5])))
+        # line_bot_api.reply_message(event.reply_token, TextSendMessage(text='\n'.join(restaurants)))
         res = requests.post(line_reply_api, headers=reply_header, json=reply_json)
         print(res.status_code)
 
@@ -574,7 +574,10 @@ def craw_ubereats(link):
 
             restaurant_list.append(template)
 
-    random_reccomend = random.sample(restaurant_list, 5)
+    if len(restaurant_list) < 5:
+        random_reccomend = random.sample(restaurant_list, 5)
+    else:
+        random_reccomend = random.sample(restaurant_list, 5)
 
     return [x['restaurant_name'] for x in random_reccomend]
 
