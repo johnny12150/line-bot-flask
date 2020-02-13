@@ -575,7 +575,7 @@ def craw_ubereats(link):
             restaurant_list.append(template)
 
     if len(restaurant_list) < 5:
-        random_reccomend = random.sample(restaurant_list, 5)
+        random_reccomend = restaurant_list
     else:
         random_reccomend = random.sample(restaurant_list, 5)
 
