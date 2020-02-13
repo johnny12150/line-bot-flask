@@ -421,6 +421,7 @@ def handle_message(event):
         )
         line_bot_api.reply_message(event.reply_token, message)
 
+    # TODO 改成先爬餐廳以備回復(考慮用資料庫存?)
     # 動作太慢，要把token存起來，改成push API
     if 'UE' in msg:
         # 送餐地址
@@ -428,7 +429,7 @@ def handle_message(event):
         # 透過爬蟲抓出交大可以訂的餐廳
         restaurants = craw_ubereats(location)
         print(restaurants)
-        userId = events.source.userId
+        userId = event.source.userId
         # reply_header, reply_json = ue_push(event.reply_token, '\n'.join(restaurants))
         reply_header, reply_json = ue_push(userId, '\n'.join(restaurants))
 
